@@ -2,14 +2,14 @@
 <html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Axora AI – Pay Calculator</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
     
     <script>
         tailwind.config = {
@@ -17,25 +17,20 @@
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', 'sans-serif'],
+                        sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
                         mono: ['"JetBrains Mono"', 'monospace'],
                     },
                     colors: {
                         navy: {
                             950: '#060913',
-                            900: '#0a0f1d',
+                            900: '#0B1120',
                             800: '#111827',
-                            700: '#1e293b',
                         },
                         electric: {
-                            400: '#60a5fa',
-                            500: '#3b82f6',
-                            600: '#2563eb',
+                            400: '#60A5FA',
+                            500: '#3B82F6',
+                            600: '#2563EB',
                         }
-                    },
-                    boxShadow: {
-                        'glow': '0 0 40px -10px rgba(59, 130, 246, 0.35)',
-                        'card': '0 20px 40px -15px rgba(0, 0, 0, 0.5)',
                     }
                 }
             }
@@ -43,19 +38,16 @@
     </script>
 
     <style>
-        /* Custom Aesthetics & Scrollbar */
         body {
             background-color: #060913;
             background-image: 
-                radial-gradient(at 0% 0%, rgba(37, 99, 235, 0.14) 0px, transparent 50%),
-                radial-gradient(at 100% 0%, rgba(124, 58, 237, 0.12) 0px, transparent 50%),
-                radial-gradient(at 50% 100%, rgba(14, 165, 233, 0.08) 0px, transparent 50%);
-            background-attachment: fixed;
+                radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.16) 0px, transparent 55%),
+                radial-gradient(at 100% 100%, rgba(124, 58, 237, 0.14) 0px, transparent 55%);
             color: #f8fafc;
             overflow-x: hidden;
         }
 
-        /* Remove default number input spinners for a clean SaaS look */
+        /* Remove number input spinners */
         input[type="number"]::-webkit-inner-spin-button,
         input[type="number"]::-webkit-outer-spin-button {
             -webkit-appearance: none;
@@ -65,894 +57,324 @@
             -moz-appearance: textfield;
         }
 
-        /* Subtle glassmorphism card styling */
-        .saas-card {
-            background: rgba(17, 24, 39, 0.72);
+        .saas-shell {
+            background: rgba(11, 17, 32, 0.85);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 20px 45px -15px rgba(0, 0, 0, 0.7);
         }
 
-        /* Input container glow on focus-within */
-        .input-group {
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .input-group:focus-within {
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
-            transform: translateY(-1px);
+        .result-card {
+            background: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 48%, #6d28d9 100%);
+            box-shadow: 0 12px 30px -8px rgba(59, 130, 246, 0.45);
         }
 
-        /* Gradient Result Card */
-        .result-hero-gradient {
-            background: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 45%, #6d28d9 100%);
-            position: relative;
-            overflow: hidden;
+        .input-box {
+            transition: all 0.15s ease;
         }
-        .result-hero-gradient::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -30%;
-            width: 380px;
-            height: 380px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(255,255,255,0.16) 0%, transparent 70%);
-            pointer-events: none;
-        }
-
-        /* Smooth micro-animations */
-        @keyframes pulseSubtle {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.55; }
-        }
-        .live-dot {
-            animation: pulseSubtle 2s infinite ease-in-out;
+        .input-box:focus-within {
+            border-color: #3B82F6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between antialiased selection:bg-electric-500 selection:text-white">
+<body class="min-h-[100dvh] flex flex-col items-center justify-center p-3 sm:p-4 select-none">
 
-    <!-- Top Navigation / SaaS Header -->
-    <header class="border-b border-white/10 bg-navy-900/60 backdrop-blur-md sticky top-0 z-30">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between">
-            <!-- Brand Identity -->
-            <div class="flex items-center gap-3.5">
-                <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-br from-electric-500 to-purple-600 flex items-center justify-center shadow-lg shadow-electric-500/25 border border-white/20">
-                    <!-- Custom Axora AI Vector Logo -->
-                    <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Compact Single-Screen Mobile Container (Max 420px) -->
+    <main class="w-full max-w-[400px] saas-shell rounded-3xl p-4 sm:p-5 flex flex-col gap-3.5 relative overflow-hidden">
+        
+        <!-- Top Accent Line -->
+        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-electric-500 via-indigo-500 to-purple-500"></div>
+
+        <!-- 1. Minimalist Header -->
+        <header class="flex items-center justify-between pt-0.5">
+            <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-electric-500 to-purple-600 flex items-center justify-center shadow-md border border-white/20">
+                    <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M12 2L2 7l10 5 10-5-10-5z"/>
                         <path d="M2 17l10 5 10-5"/>
                         <path d="M2 12l10 5 10-5"/>
                     </svg>
                 </div>
                 <div>
-                    <div class="flex items-center gap-2.5">
-                        <span class="font-extrabold text-lg sm:text-xl tracking-tight text-white">Axora <span class="text-transparent bg-clip-text bg-gradient-to-r from-electric-400 to-purple-400">AI</span></span>
-                        <span class="hidden sm:inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold uppercase tracking-wider bg-electric-500/15 text-electric-400 border border-electric-500/30">
-                            Workforce Suite
-                        </span>
-                    </div>
-                    <p class="text-xs text-slate-400">Real-Time Participant & Worker Pay Engine</p>
+                    <h1 class="text-sm font-extrabold tracking-tight text-white leading-none">
+                        Axora <span class="text-electric-400">AI</span>
+                    </h1>
+                    <p class="text-[11px] font-medium text-slate-400 mt-0.5">Instant Pay Calculator</p>
                 </div>
             </div>
 
-            <!-- Right Status & Quick Actions -->
-            <div class="flex items-center gap-3">
-                <div class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800/80 border border-white/10 text-xs text-slate-300">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 live-dot"></span>
-                    <span>Instant Auto-Calc Active</span>
-                </div>
-                <button id="headerResetBtn" type="button" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-200 bg-slate-800/90 hover:bg-slate-700/90 border border-white/10 transition-all active:scale-95 shadow-sm" title="Reset calculator to default (Esc)">
-                    <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                    </svg>
-                    <span>Reset</span>
-                </button>
-            </div>
-        </div>
-    </header>
-
-    <!-- Main Dashboard Container -->
-    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
-
-        <!-- Validation Banner (Hidden by default, shown only if user attempts negative numbers) -->
-        <div id="validationAlert" class="hidden mb-6 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-300 flex items-center justify-between gap-3 transition-all">
-            <div class="flex items-center gap-3 text-sm">
-                <svg class="w-5 h-5 text-amber-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            <button 
+                type="button" 
+                id="resetBtn" 
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-200 bg-slate-800/90 hover:bg-slate-700 active:scale-95 border border-white/10 transition-all"
+                title="Reset fields"
+            >
+                <svg class="w-3.5 h-3.5 text-electric-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                 </svg>
-                <span id="validationMessage">Negative values are not permitted. Value has been automatically adjusted to 0.</span>
-            </div>
-            <button id="dismissAlertBtn" class="text-xs font-semibold uppercase tracking-wider px-2.5 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-200">
-                Dismiss
+                <span>Reset</span>
             </button>
-        </div>
+        </header>
 
-        <!-- Primary 12-Column SaaS Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
-
-            <!-- LEFT COLUMN: Input Parameters & Controls (7 Cols on Desktop) -->
-            <div class="lg:col-span-7 space-y-6">
-                
-                <!-- Parameter Configuration Card -->
-                <section class="saas-card rounded-3xl p-5 sm:p-8 shadow-card relative overflow-hidden">
-                    <!-- Subtle decorative top border glow -->
-                    <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-electric-500 via-indigo-500 to-purple-500"></div>
-
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-6 mb-6 border-b border-white/10">
-                        <div>
-                            <h1 class="text-xl sm:text-2xl font-bold text-white tracking-tight">Payment Parameters</h1>
-                            <p class="text-sm text-slate-400 mt-0.5">Enter hourly rate and working duration. Results update live as you type.</p>
-                        </div>
-                        <span class="inline-flex items-center self-start sm:self-auto gap-1.5 text-xs font-medium text-electric-400 bg-electric-500/10 px-3 py-1.5 rounded-xl border border-electric-500/20">
-                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                            </svg>
-                            Zero-latency calculation
-                        </span>
-                    </div>
-
-                    <div class="space-y-7">
-                        <!-- 1. HOURLY PAY RATE INPUT -->
-                        <div>
-                            <div class="flex items-center justify-between mb-2.5">
-                                <label for="hourlyRateInput" class="block text-sm font-semibold text-slate-200">
-                                    Hourly Pay Rate <span class="text-electric-400 font-normal">(₹ / Hour)</span>
-                                </label>
-                                <span id="perMinuteBadge" class="text-xs font-mono text-slate-400 bg-slate-800/90 px-2.5 py-1 rounded-lg border border-white/5">
-                                    ₹5.00 / min
-                                </span>
-                            </div>
-
-                            <div class="input-group relative flex items-center rounded-2xl bg-navy-950/90 border border-slate-700/80 overflow-hidden">
-                                <div class="pl-4 pr-3 py-4 flex items-center justify-center text-slate-400 select-none border-r border-slate-800 bg-slate-900/50">
-                                    <span class="text-xl font-bold text-electric-400 font-mono">₹</span>
-                                </div>
-                                <input 
-                                    type="number" 
-                                    id="hourlyRateInput" 
-                                    value="300" 
-                                    min="0" 
-                                    step="any" 
-                                    placeholder="0.00"
-                                    aria-label="Hourly Pay Rate in Indian Rupees"
-                                    class="w-full bg-transparent px-4 py-4 text-xl sm:text-2xl font-bold text-white font-mono placeholder-slate-600 focus:outline-none"
-                                >
-                                <div class="pr-4 pl-2 flex items-center gap-2">
-                                    <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 bg-slate-800/80 px-2.5 py-1.5 rounded-lg border border-white/5 select-none">
-                                        / HR
-                                    </span>
-                                </div>
-                            </div>
-
-                            <!-- Quick Hourly Rate Presets -->
-                            <div class="mt-3 flex flex-wrap items-center gap-2">
-                                <span class="text-xs text-slate-400 mr-1">Quick Rate:</span>
-                                <button type="button" data-rate="150" class="rate-preset-btn px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-800/70 hover:bg-electric-600/20 hover:text-electric-400 hover:border-electric-500/40 text-slate-300 border border-white/5 transition-all">₹150</button>
-                                <button type="button" data-rate="250" class="rate-preset-btn px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-800/70 hover:bg-electric-600/20 hover:text-electric-400 hover:border-electric-500/40 text-slate-300 border border-white/5 transition-all">₹250</button>
-                                <button type="button" data-rate="300" class="rate-preset-btn px-2.5 py-1 rounded-lg text-xs font-medium bg-electric-500/20 text-electric-400 border border-electric-500/40 transition-all">₹300 (Default)</button>
-                                <button type="button" data-rate="500" class="rate-preset-btn px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-800/70 hover:bg-electric-600/20 hover:text-electric-400 hover:border-electric-500/40 text-slate-300 border border-white/5 transition-all">₹500</button>
-                                <button type="button" data-rate="600" class="rate-preset-btn px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-800/70 hover:bg-electric-600/20 hover:text-electric-400 hover:border-electric-500/40 text-slate-300 border border-white/5 transition-all">₹600</button>
-                                <button type="button" data-rate="1000" class="rate-preset-btn px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-800/70 hover:bg-electric-600/20 hover:text-electric-400 hover:border-electric-500/40 text-slate-300 border border-white/5 transition-all">₹1,000</button>
-                            </div>
-                        </div>
-
-                        <!-- 2. WORKING DURATION INPUTS (INDEPENDENT HOURS & MINUTES) -->
-                        <div>
-                            <div class="flex items-center justify-between mb-2.5">
-                                <label class="block text-sm font-semibold text-slate-200">
-                                    Working Duration <span class="text-slate-400 font-normal">(Hours & Minutes work independently)</span>
-                                </label>
-                                <button type="button" id="clearDurationBtn" class="text-xs font-medium text-slate-400 hover:text-electric-400 transition-colors">
-                                    Clear Duration
-                                </button>
-                            </div>
-
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <!-- Hours Input Field -->
-                                <div>
-                                    <div class="input-group relative flex items-center rounded-2xl bg-navy-950/90 border border-slate-700/80 overflow-hidden">
-                                        <div class="pl-4 pr-2.5 py-4 text-slate-400 select-none">
-                                            <svg class="w-5 h-5 text-electric-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                            </svg>
-                                        </div>
-                                        <input 
-                                            type="number" 
-                                            id="hoursInput" 
-                                            min="0" 
-                                            step="any" 
-                                            placeholder="0"
-                                            aria-label="Working Hours"
-                                            class="w-full bg-transparent px-2 py-4 text-xl sm:text-2xl font-bold text-white font-mono placeholder-slate-600 focus:outline-none"
-                                        >
-                                        <div class="pr-4 pl-2 select-none">
-                                            <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 bg-slate-800/80 px-2.5 py-1.5 rounded-lg border border-white/5">
-                                                Hours
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <p class="text-[11px] text-slate-400 mt-1.5 pl-1">Leave empty if calculating minutes only</p>
-                                </div>
-
-                                <!-- Minutes Input Field -->
-                                <div>
-                                    <div class="input-group relative flex items-center rounded-2xl bg-navy-950/90 border border-slate-700/80 overflow-hidden">
-                                        <div class="pl-4 pr-2.5 py-4 text-slate-400 select-none">
-                                            <svg class="w-5 h-5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                            </svg>
-                                        </div>
-                                        <input 
-                                            type="number" 
-                                            id="minutesInput" 
-                                            min="0" 
-                                            step="any" 
-                                            placeholder="0"
-                                            aria-label="Working Minutes"
-                                            class="w-full bg-transparent px-2 py-4 text-xl sm:text-2xl font-bold text-white font-mono placeholder-slate-600 focus:outline-none"
-                                        >
-                                        <div class="pr-4 pl-2 select-none">
-                                            <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 bg-slate-800/80 px-2.5 py-1.5 rounded-lg border border-white/5">
-                                                Minutes
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <p id="minutesHelperText" class="text-[11px] text-slate-400 mt-1.5 pl-1">Supports 60+ mins (auto-converts to hours)</p>
-                                </div>
-                            </div>
-
-                            <!-- Quick Duration Chips for Fast Entry -->
-                            <div class="mt-4 pt-3 border-t border-white/5 flex flex-wrap items-center gap-2">
-                                <span class="text-xs text-slate-400 mr-1">Quick Duration:</span>
-                                <button type="button" data-hours="" data-minutes="30" class="duration-preset-btn px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-800/70 hover:bg-purple-500/20 hover:text-purple-300 hover:border-purple-500/40 text-slate-300 border border-white/5 transition-all">30m</button>
-                                <button type="button" data-hours="1" data-minutes="" class="duration-preset-btn px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-800/70 hover:bg-purple-500/20 hover:text-purple-300 hover:border-purple-500/40 text-slate-300 border border-white/5 transition-all">1h</button>
-                                <button type="button" data-hours="1" data-minutes="30" class="duration-preset-btn px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-800/70 hover:bg-purple-500/20 hover:text-purple-300 hover:border-purple-500/40 text-slate-300 border border-white/5 transition-all">1h 30m</button>
-                                <button type="button" data-hours="2" data-minutes="" class="duration-preset-btn px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-800/70 hover:bg-purple-500/20 hover:text-purple-300 hover:border-purple-500/40 text-slate-300 border border-white/5 transition-all">2h</button>
-                                <button type="button" data-hours="2" data-minutes="15" class="duration-preset-btn px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-800/70 hover:bg-purple-500/20 hover:text-purple-300 hover:border-purple-500/40 text-slate-300 border border-white/5 transition-all">2h 15m</button>
-                                <button type="button" data-hours="4" data-minutes="" class="duration-preset-btn px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-800/70 hover:bg-purple-500/20 hover:text-purple-300 hover:border-purple-500/40 text-slate-300 border border-white/5 transition-all">4h (Half Day)</button>
-                                <button type="button" data-hours="8" data-minutes="" class="duration-preset-btn px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-800/70 hover:bg-purple-500/20 hover:text-purple-300 hover:border-purple-500/40 text-slate-300 border border-white/5 transition-all">8h (Full Shift)</button>
-                            </div>
-                        </div>
-
-                        <!-- 3. ACTION BAR: RESET & RECORD WORKER ENTRY -->
-                        <div class="pt-4 border-t border-white/10 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-                            <div class="flex items-center gap-2 flex-grow">
-                                <input 
-                                    type="text" 
-                                    id="workerNameInput" 
-                                    placeholder="Optional: Worker / Participant Name or ID" 
-                                    class="w-full bg-navy-950/70 border border-slate-700/70 focus:border-electric-500 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none transition-all"
-                                >
-                                <button 
-                                    type="button" 
-                                    id="logEntryBtn" 
-                                    class="shrink-0 inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-electric-600 hover:bg-electric-500 text-white shadow-lg shadow-electric-600/25 transition-all active:scale-95"
-                                    title="Add current calculation to session sheet below"
-                                >
-                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-                                    </svg>
-                                    <span>Record Entry</span>
-                                </button>
-                            </div>
-
-                            <button 
-                                type="button" 
-                                id="mainResetBtn" 
-                                class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-slate-300 hover:text-white bg-slate-800/80 hover:bg-rose-500/20 hover:border-rose-500/40 border border-white/10 transition-all active:scale-95"
-                            >
-                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                </svg>
-                                <span>Reset Fields</span>
-                            </button>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Verified Scenarios / Interactive Test Examples Card -->
-                <section class="saas-card rounded-3xl p-5 sm:p-6 shadow-card">
-                    <div class="flex items-center justify-between mb-3">
-                        <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
-                            <svg class="w-4 h-4 text-electric-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            One-Click Verified Benchmarks
-                        </h2>
-                        <span class="text-[11px] text-slate-400">Click any scenario to load</span>
-                    </div>
-                    <div class="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
-                        <button type="button" data-rate="300" data-hours="1" data-minutes="" class="benchmark-btn text-left p-2.5 rounded-xl bg-slate-900/70 hover:bg-electric-500/15 border border-white/5 hover:border-electric-500/40 transition-all group">
-                            <div class="text-[11px] text-slate-400 group-hover:text-electric-300">₹300 × 1h</div>
-                            <div class="text-sm font-bold text-white font-mono mt-0.5">₹300.00</div>
-                        </button>
-                        <button type="button" data-rate="300" data-hours="1" data-minutes="30" class="benchmark-btn text-left p-2.5 rounded-xl bg-slate-900/70 hover:bg-electric-500/15 border border-white/5 hover:border-electric-500/40 transition-all group">
-                            <div class="text-[11px] text-slate-400 group-hover:text-electric-300">₹300 × 1h 30m</div>
-                            <div class="text-sm font-bold text-white font-mono mt-0.5">₹450.00</div>
-                        </button>
-                        <button type="button" data-rate="300" data-hours="2" data-minutes="" class="benchmark-btn text-left p-2.5 rounded-xl bg-slate-900/70 hover:bg-electric-500/15 border border-white/5 hover:border-electric-500/40 transition-all group">
-                            <div class="text-[11px] text-slate-400 group-hover:text-electric-300">₹300 × 2h</div>
-                            <div class="text-sm font-bold text-white font-mono mt-0.5">₹600.00</div>
-                        </button>
-                        <button type="button" data-rate="300" data-hours="" data-minutes="30" class="benchmark-btn text-left p-2.5 rounded-xl bg-slate-900/70 hover:bg-electric-500/15 border border-white/5 hover:border-electric-500/40 transition-all group">
-                            <div class="text-[11px] text-slate-400 group-hover:text-electric-300">₹300 × 30m</div>
-                            <div class="text-sm font-bold text-white font-mono mt-0.5">₹150.00</div>
-                        </button>
-                        <button type="button" data-rate="600" data-hours="2" data-minutes="15" class="benchmark-btn col-span-2 sm:col-span-1 text-left p-2.5 rounded-xl bg-slate-900/70 hover:bg-electric-500/15 border border-white/5 hover:border-electric-500/40 transition-all group">
-                            <div class="text-[11px] text-slate-400 group-hover:text-electric-300">₹600 × 2h 15m</div>
-                            <div class="text-sm font-bold text-white font-mono mt-0.5">₹1,350.00</div>
-                        </button>
-                    </div>
-                </section>
+        <!-- 2. Prominent Blue-Purple Gradient Result Card (Always Visible at Top) -->
+        <section class="result-card rounded-2xl p-4 text-white border border-white/20 relative overflow-hidden">
+            <div class="flex items-center justify-between text-[11px] font-semibold uppercase tracking-wider text-blue-100/90">
+                <span class="flex items-center gap-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse"></span>
+                    Total Payment
+                </span>
+                <span id="rateSummaryBadge" class="font-mono bg-black/25 px-2 py-0.5 rounded-md border border-white/10 text-[10px]">
+                    ₹300/hr
+                </span>
             </div>
 
-            <!-- RIGHT COLUMN: Prominent Result Card & Formula Breakdown (5 Cols on Desktop) -->
-            <div class="lg:col-span-5 space-y-6">
-
-                <!-- Blue-Purple Gradient Payment Result Card -->
-                <section class="result-hero-gradient rounded-3xl p-6 sm:p-8 shadow-glow border border-white/20 text-white">
-                    <div class="flex items-center justify-between gap-2 mb-3">
-                        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider bg-black/25 backdrop-blur-md border border-white/15">
-                            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-                            Total Calculated Payment
-                        </span>
-
-                        <button 
-                            type="button" 
-                            id="copyResultBtn" 
-                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-white/15 hover:bg-white/25 backdrop-blur-md border border-white/20 transition-all active:scale-95"
-                            title="Copy calculated amount"
-                        >
-                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                            </svg>
-                            <span id="copyBtnText">Copy Amount</span>
-                        </button>
-                    </div>
-
-                    <!-- Main Currency Display -->
-                    <div class="my-4">
-                        <div id="totalPaymentDisplay" class="text-4xl sm:text-5xl lg:text-6xl font-extrabold font-mono tracking-tight break-all">
-                            ₹0.00
-                        </div>
-                        <p id="resultSubtext" class="text-xs sm:text-sm text-blue-100/85 mt-2">
-                            Enter working hours or minutes to calculate instant payout.
-                        </p>
-                    </div>
-
-                    <!-- Key Metrics Grid inside Hero Card -->
-                    <div class="grid grid-cols-3 gap-2.5 pt-5 mt-5 border-t border-white/20">
-                        <div class="bg-black/20 backdrop-blur-sm rounded-2xl p-3 border border-white/10">
-                            <div class="text-[11px] uppercase tracking-wider text-blue-100/75 font-medium">Hourly Rate</div>
-                            <div id="metricHourlyRate" class="text-sm sm:text-base font-bold font-mono mt-0.5 truncate">₹300.00</div>
-                        </div>
-                        <div class="bg-black/20 backdrop-blur-sm rounded-2xl p-3 border border-white/10">
-                            <div class="text-[11px] uppercase tracking-wider text-blue-100/75 font-medium">Total Hours</div>
-                            <div id="metricTotalHours" class="text-sm sm:text-base font-bold font-mono mt-0.5 truncate">0.00 hrs</div>
-                        </div>
-                        <div class="bg-black/20 backdrop-blur-sm rounded-2xl p-3 border border-white/10">
-                            <div class="text-[11px] uppercase tracking-wider text-blue-100/75 font-medium">Total Minutes</div>
-                            <div id="metricTotalMinutes" class="text-sm sm:text-base font-bold font-mono mt-0.5 truncate">0 mins</div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Detailed Calculation Breakdown Card -->
-                <section class="saas-card rounded-3xl p-5 sm:p-6 shadow-card">
-                    <div class="flex items-center justify-between mb-4 pb-3 border-b border-white/10">
-                        <h2 class="text-sm font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
-                            <svg class="w-4 h-4 text-electric-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                            </svg>
-                            Calculation Breakdown
-                        </h2>
-                        <span class="text-xs font-mono text-electric-400">Live Formula</span>
-                    </div>
-
-                    <!-- Mathematical Rows -->
-                    <div class="space-y-3 text-sm">
-                        <div class="flex items-center justify-between py-1.5 border-b border-white/5">
-                            <span class="text-slate-400">Entered Duration</span>
-                            <span id="breakdownEnteredDuration" class="font-mono font-semibold text-slate-200">0 hrs, 0 mins</span>
-                        </div>
-
-                        <div id="normalizedDurationRow" class="hidden flex items-center justify-between py-1.5 border-b border-white/5 bg-electric-500/10 px-2.5 rounded-lg">
-                            <span class="text-electric-300 text-xs">Normalized Equivalent (60+ mins)</span>
-                            <span id="breakdownNormalizedDuration" class="font-mono font-semibold text-electric-300 text-xs">0 hrs 0 mins</span>
-                        </div>
-
-                        <div class="flex items-center justify-between py-1.5 border-b border-white/5">
-                            <span class="text-slate-400">Hours Component Pay</span>
-                            <span id="breakdownHoursPay" class="font-mono font-semibold text-slate-200">₹0.00</span>
-                        </div>
-
-                        <div class="flex items-center justify-between py-1.5 border-b border-white/5">
-                            <span class="text-slate-400">Minutes Component Pay</span>
-                            <span id="breakdownMinutesPay" class="font-mono font-semibold text-slate-200">₹0.00</span>
-                        </div>
-
-                        <div class="flex items-center justify-between py-1.5">
-                            <span class="text-slate-300 font-semibold">Decimal Duration Multiplier</span>
-                            <span id="breakdownDecimalHours" class="font-mono font-bold text-electric-400">0.0000 hrs</span>
-                        </div>
-                    </div>
-
-                    <!-- Formula Expression Box -->
-                    <div class="mt-4 p-3.5 rounded-2xl bg-navy-950/90 border border-slate-800 font-mono text-xs space-y-1.5">
-                        <div class="text-slate-400 select-none">Formula: Rate × (Hours + Minutes / 60)</div>
-                        <div id="liveFormulaEquation" class="text-slate-200 font-semibold break-all">
-                            ₹300 × (0 + 0 / 60) = ₹0.00
-                        </div>
-                    </div>
-                </section>
-
+            <!-- Main Calculated Amount -->
+            <div id="totalPayDisplay" class="text-3xl sm:text-4xl font-extrabold font-mono tracking-tight my-1.5 truncate select-all">
+                ₹0.00
             </div>
+
+            <!-- Compact 1-Line Summary & Breakdown Pill -->
+            <div class="flex items-center justify-between gap-2 bg-black/25 backdrop-blur-sm rounded-xl px-2.5 py-1.5 border border-white/10 text-[11px] font-mono">
+                <span id="formulaDisplay" class="text-blue-100 truncate">₹300 × (0h + 0m/60)</span>
+                <span id="durationBadge" class="shrink-0 font-bold text-emerald-300">0h 0m</span>
+            </div>
+        </section>
+
+        <!-- Subtle Inline Warning (Hidden unless negative key pressed) -->
+        <div id="warningBanner" class="hidden text-[11px] font-medium text-amber-300 bg-amber-500/10 border border-amber-500/30 rounded-xl px-3 py-1.5 text-center">
+            Negative values are not allowed.
         </div>
 
-        <!-- BOTTOM SECTION: Session Participant / Worker Payout Log -->
-        <section class="mt-8 saas-card rounded-3xl p-5 sm:p-7 shadow-card">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 mb-4 border-b border-white/10">
-                <div>
-                    <div class="flex items-center gap-2.5">
-                        <h2 class="text-lg font-bold text-white">Participant & Worker Session Log</h2>
-                        <span id="logCountBadge" class="px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold bg-electric-500/20 text-electric-400 border border-electric-500/30">
-                            0 Entries
-                        </span>
-                    </div>
-                    <p class="text-xs text-slate-400 mt-0.5">Record calculations during your session to track payouts across multiple workers or project participants.</p>
+        <!-- 3. Compact Input Controls -->
+        <section class="flex flex-col gap-3">
+            
+            <!-- Hourly Pay Rate Input -->
+            <div>
+                <div class="flex items-center justify-between mb-1">
+                    <label for="rateInput" class="text-xs font-semibold text-slate-300">
+                        Hourly Pay Rate
+                    </label>
+                    <span id="perMinText" class="text-[11px] font-mono text-slate-400">₹5.00 / min</span>
                 </div>
-
-                <div class="flex items-center gap-3 self-start sm:self-auto">
-                    <div class="px-3.5 py-2 rounded-xl bg-navy-950 border border-white/10 text-xs">
-                        <span class="text-slate-400 mr-1.5">Session Grand Total:</span>
-                        <span id="sessionGrandTotal" class="font-mono font-bold text-emerald-400 text-sm">₹0.00</span>
-                    </div>
-                    <button 
-                        type="button" 
-                        id="clearLogBtn" 
-                        class="px-3 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-rose-300 bg-slate-800/70 hover:bg-rose-500/15 border border-white/5 transition-all"
+                <div class="input-box flex items-center rounded-2xl bg-navy-950 border border-slate-700/80 overflow-hidden">
+                    <span class="pl-3.5 pr-2.5 py-2.5 text-base font-bold text-electric-400 font-mono bg-slate-900/60 border-r border-slate-800">₹</span>
+                    <input 
+                        type="number" 
+                        id="rateInput" 
+                        value="300" 
+                        min="0" 
+                        step="any" 
+                        inputmode="decimal"
+                        placeholder="300"
+                        class="w-full bg-transparent px-3 py-2.5 text-lg font-bold text-white font-mono placeholder-slate-600 focus:outline-none"
                     >
-                        Clear Log
-                    </button>
+                    <span class="pr-3.5 text-[11px] font-bold text-slate-400 uppercase tracking-wider">/ HR</span>
                 </div>
             </div>
 
-            <!-- Empty State -->
-            <div id="emptyLogState" class="py-8 text-center text-slate-400 text-sm">
-                No worker payouts recorded yet. Click <span class="text-electric-400 font-semibold">"Record Entry"</span> after entering a duration to build a quick batch summary.
+            <!-- Side-by-Side Working Hours & Working Minutes (2-Column Grid for Zero Scroll) -->
+            <div>
+                <div class="flex items-center justify-between mb-1">
+                    <span class="text-xs font-semibold text-slate-300">Working Duration</span>
+                    <span id="decimalHoursText" class="text-[11px] font-mono text-electric-400">0.00 hrs total</span>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2.5">
+                    <!-- Hours Box -->
+                    <div class="input-box flex flex-col rounded-2xl bg-navy-950 border border-slate-700/80 px-3 py-2">
+                        <label for="hoursInput" class="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                            Hours
+                        </label>
+                        <div class="flex items-baseline justify-between mt-0.5">
+                            <input 
+                                type="number" 
+                                id="hoursInput" 
+                                min="0" 
+                                step="any" 
+                                inputmode="decimal"
+                                placeholder="0"
+                                class="w-full bg-transparent text-xl font-extrabold text-white font-mono placeholder-slate-600 focus:outline-none"
+                            >
+                            <span class="text-xs font-semibold text-electric-400 ml-1">hr</span>
+                        </div>
+                    </div>
+
+                    <!-- Minutes Box -->
+                    <div class="input-box flex flex-col rounded-2xl bg-navy-950 border border-slate-700/80 px-3 py-2">
+                        <label for="minutesInput" class="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                            Minutes
+                        </label>
+                        <div class="flex items-baseline justify-between mt-0.5">
+                            <input 
+                                type="number" 
+                                id="minutesInput" 
+                                min="0" 
+                                step="any" 
+                                inputmode="decimal"
+                                placeholder="0"
+                                class="w-full bg-transparent text-xl font-extrabold text-white font-mono placeholder-slate-600 focus:outline-none"
+                            >
+                            <span class="text-xs font-semibold text-purple-400 ml-1">min</span>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <!-- Log Table (Hidden when empty) -->
-            <div id="logTableContainer" class="hidden overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="border-b border-white/10 text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                            <th class="py-3 px-3">#</th>
-                            <th class="py-3 px-3">Participant / Worker</th>
-                            <th class="py-3 px-3">Hourly Rate</th>
-                            <th class="py-3 px-3">Duration</th>
-                            <th class="py-3 px-3 text-right">Calculated Payout</th>
-                            <th class="py-3 px-3 text-right">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="logTableBody" class="divide-y divide-white/5 text-sm font-mono">
-                        <!-- Dynamically populated rows -->
-                    </tbody>
-                </table>
+            <!-- Live Component Split Bar (Compact 2-pill breakdown) -->
+            <div class="grid grid-cols-2 gap-2 pt-0.5">
+                <div class="bg-slate-900/70 border border-white/5 rounded-xl px-3 py-1.5 flex items-center justify-between text-[11px]">
+                    <span class="text-slate-400">Hours Pay:</span>
+                    <span id="hoursPayText" class="font-mono font-semibold text-slate-200">₹0.00</span>
+                </div>
+                <div class="bg-slate-900/70 border border-white/5 rounded-xl px-3 py-1.5 flex items-center justify-between text-[11px]">
+                    <span class="text-slate-400">Mins Pay:</span>
+                    <span id="minsPayText" class="font-mono font-semibold text-slate-200">₹0.00</span>
+                </div>
             </div>
+
+            <!-- Bottom Clear Duration Button -->
+            <button 
+                type="button" 
+                id="clearDurationBtn" 
+                class="w-full py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider text-slate-300 hover:text-white bg-slate-800/80 hover:bg-slate-700/90 active:scale-[0.99] border border-white/10 transition-all"
+            >
+                Clear Hours & Minutes
+            </button>
         </section>
 
     </main>
 
-    <!-- Minimalist Enterprise Footer -->
-    <footer class="border-t border-white/10 bg-navy-950/80 py-5 mt-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400">
-            <div class="flex items-center gap-2">
-                <span class="font-bold text-slate-200">Axora AI</span>
-                <span>•</span>
-                <span>Precision Workforce Compensation Calculator</span>
-            </div>
-            <div>
-                Formula: <code class="text-electric-400 font-mono">Payment = Hourly Rate × (Hours + Minutes / 60)</code>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Application Logic -->
     <script>
         (function () {
             'use strict';
 
-            // --- DOM Elements ---
-            const hourlyRateInput = document.getElementById('hourlyRateInput');
+            const DEFAULT_RATE = 300;
+
+            const rateInput = document.getElementById('rateInput');
             const hoursInput = document.getElementById('hoursInput');
             const minutesInput = document.getElementById('minutesInput');
-            const workerNameInput = document.getElementById('workerNameInput');
 
-            const perMinuteBadge = document.getElementById('perMinuteBadge');
-            const minutesHelperText = document.getElementById('minutesHelperText');
+            const totalPayDisplay = document.getElementById('totalPayDisplay');
+            const rateSummaryBadge = document.getElementById('rateSummaryBadge');
+            const formulaDisplay = document.getElementById('formulaDisplay');
+            const durationBadge = document.getElementById('durationBadge');
+            const perMinText = document.getElementById('perMinText');
+            const decimalHoursText = document.getElementById('decimalHoursText');
+            const hoursPayText = document.getElementById('hoursPayText');
+            const minsPayText = document.getElementById('minsPayText');
+            const warningBanner = document.getElementById('warningBanner');
 
-            const totalPaymentDisplay = document.getElementById('totalPaymentDisplay');
-            const resultSubtext = document.getElementById('resultSubtext');
-            const metricHourlyRate = document.getElementById('metricHourlyRate');
-            const metricTotalHours = document.getElementById('metricTotalHours');
-            const metricTotalMinutes = document.getElementById('metricTotalMinutes');
-
-            const breakdownEnteredDuration = document.getElementById('breakdownEnteredDuration');
-            const normalizedDurationRow = document.getElementById('normalizedDurationRow');
-            const breakdownNormalizedDuration = document.getElementById('breakdownNormalizedDuration');
-            const breakdownHoursPay = document.getElementById('breakdownHoursPay');
-            const breakdownMinutesPay = document.getElementById('breakdownMinutesPay');
-            const breakdownDecimalHours = document.getElementById('breakdownDecimalHours');
-            const liveFormulaEquation = document.getElementById('liveFormulaEquation');
-
-            const validationAlert = document.getElementById('validationAlert');
-            const validationMessage = document.getElementById('validationMessage');
-            const dismissAlertBtn = document.getElementById('dismissAlertBtn');
-
-            const headerResetBtn = document.getElementById('headerResetBtn');
-            const mainResetBtn = document.getElementById('mainResetBtn');
+            const resetBtn = document.getElementById('resetBtn');
             const clearDurationBtn = document.getElementById('clearDurationBtn');
-            const copyResultBtn = document.getElementById('copyResultBtn');
-            const copyBtnText = document.getElementById('copyBtnText');
 
-            const logEntryBtn = document.getElementById('logEntryBtn');
-            const clearLogBtn = document.getElementById('clearLogBtn');
-            const logCountBadge = document.getElementById('logCountBadge');
-            const sessionGrandTotal = document.getElementById('sessionGrandTotal');
-            const emptyLogState = document.getElementById('emptyLogState');
-            const logTableContainer = document.getElementById('logTableContainer');
-            const logTableBody = document.getElementById('logTableBody');
-
-            // Default Rate Constant
-            const DEFAULT_HOURLY_RATE = 300;
-
-            // Session Log State
-            let sessionEntries = [];
-            let currentCalculation = {
-                rate: DEFAULT_HOURLY_RATE,
-                hours: 0,
-                minutes: 0,
-                totalPay: 0
-            };
-
-            // --- Indian Rupee (en-IN) Currency Formatter ---
-            const inrFormatter = new Intl.NumberFormat('en-IN', {
+            const inrFormat = new Intl.NumberFormat('en-IN', {
                 style: 'currency',
                 currency: 'INR',
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
             });
 
-            const numberFormatter = new Intl.NumberFormat('en-IN', {
+            const numFormat = new Intl.NumberFormat('en-IN', {
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 2
             });
 
-            function formatINR(amount) {
-                if (!Number.isFinite(amount) || amount < 0) return '₹0.00';
-                // Ensure negative zero (-0.00) never appears
-                const cleanAmount = Math.abs(amount) < 1e-9 ? 0 : amount;
-                return inrFormatter.format(cleanAmount);
+            function formatINR(val) {
+                if (!Number.isFinite(val) || val <= 0) return '₹0.00';
+                return inrFormat.format(val);
             }
 
-            // --- Validation Helper for Negative Values ---
-            function sanitizeAndValidateInput(inputElement, fieldLabel) {
-                const rawVal = inputElement.value.trim();
-                if (rawVal === '') return 0;
-
-                // Check if user typed a minus sign or negative number
-                if (rawVal.includes('-') || parseFloat(rawVal) < 0) {
-                    const positiveVal = Math.abs(parseFloat(rawVal)) || 0;
-                    inputElement.value = positiveVal === 0 ? '' : positiveVal;
-                    showValidationWarning(`${fieldLabel} cannot be negative. Converted to positive value.`);
-                    return positiveVal;
+            function parseCleanPositive(inputEl) {
+                const raw = inputEl.value.trim();
+                if (raw === '') return 0;
+                const num = parseFloat(raw);
+                if (raw.includes('-') || num < 0) {
+                    const pos = Math.abs(num) || 0;
+                    inputEl.value = pos === 0 ? '' : pos;
+                    showWarning();
+                    return pos;
                 }
-
-                const parsed = parseFloat(rawVal);
-                return Number.isFinite(parsed) && parsed >= 0 ? parsed : 0;
+                return Number.isFinite(num) && num >= 0 ? num : 0;
             }
 
-            function showValidationWarning(msg) {
-                validationMessage.textContent = msg;
-                validationAlert.classList.remove('hidden');
+            let warnTimeout;
+            function showWarning() {
+                warningBanner.classList.remove('hidden');
+                clearTimeout(warnTimeout);
+                warnTimeout = setTimeout(() => {
+                    warningBanner.classList.add('hidden');
+                }, 2200);
             }
 
-            function hideValidationWarning() {
-                validationAlert.classList.add('hidden');
-            }
-
-            // --- Core Real-Time Calculation Engine ---
-            function calculatePayment() {
-                const rate = sanitizeAndValidateInput(hourlyRateInput, 'Hourly Pay Rate');
-                const hours = sanitizeAndValidateInput(hoursInput, 'Working Hours');
-                const minutes = sanitizeAndValidateInput(minutesInput, 'Working Minutes');
+            function calculate() {
+                const rate = parseCleanPositive(rateInput);
+                const hours = parseCleanPositive(hoursInput);
+                const minutes = parseCleanPositive(minutesInput);
 
                 // Formula: Payment = Hourly Rate × (Hours + Minutes / 60)
-                const decimalHours = hours + (minutes / 60);
-                const rawTotalPayment = rate * decimalHours;
-                const roundedTotalPayment = Math.round((rawTotalPayment + Number.EPSILON) * 100) / 100;
+                const totalDecimalHours = hours + (minutes / 60);
+                const totalPay = Math.round(((rate * totalDecimalHours) + Number.EPSILON) * 100) / 100;
 
                 const hoursPay = rate * hours;
-                const minutesPay = rate * (minutes / 60);
-                const totalMinutes = (hours * 60) + minutes;
-                const perMinuteRate = rate / 60;
+                const minsPay = rate * (minutes / 60);
+                const totalMins = (hours * 60) + minutes;
 
-                // Store current state for session logging or copying
-                currentCalculation = {
-                    rate,
-                    hours,
-                    minutes,
-                    decimalHours,
-                    totalPay: roundedTotalPayment
-                };
+                // Update Hero Result
+                totalPayDisplay.textContent = formatINR(totalPay);
+                rateSummaryBadge.textContent = `₹${numFormat.format(rate)}/hr`;
+                perMinText.textContent = `${formatINR(rate / 60)} / min`;
 
-                // 1. Update Per-Minute Badge
-                perMinuteBadge.textContent = `${formatINR(perMinuteRate)} / min`;
+                // Update Formula & Normalized Duration Pill
+                formulaDisplay.textContent = `₹${numFormat.format(rate)} × (${numFormat.format(hours)}h + ${numFormat.format(minutes)}m/60)`;
 
-                // 2. Update Main Hero Result Card
-                totalPaymentDisplay.textContent = formatINR(roundedTotalPayment);
-                metricHourlyRate.textContent = formatINR(rate);
-                metricTotalHours.textContent = `${numberFormatter.format(decimalHours)} hrs`;
-                metricTotalMinutes.textContent = `${numberFormatter.format(totalMinutes)} mins`;
-
-                // 3. Update Dynamic Subtext & Minutes Helper
-                if (hours === 0 && minutes === 0) {
-                    resultSubtext.textContent = 'No working duration entered — showing ₹0.00.';
-                } else {
-                    resultSubtext.textContent = `Calculated at ${formatINR(rate)}/hr for ${numberFormatter.format(decimalHours)} billable hours.`;
-                }
-
-                // Handle 60+ minutes normalization display
                 if (minutes >= 60) {
-                    const normHours = Math.floor(totalMinutes / 60);
-                    const normRemMinutes = +(totalMinutes % 60).toFixed(2);
-                    minutesHelperText.textContent = `${minutes} mins = ${Math.floor(minutes / 60)}h ${+(minutes % 60).toFixed(1)}m`;
-                    minutesHelperText.className = 'text-[11px] text-electric-400 font-medium mt-1.5 pl-1';
-
-                    normalizedDurationRow.classList.remove('hidden');
-                    breakdownNormalizedDuration.textContent = `${normHours} hrs ${normRemMinutes} mins`;
+                    const normH = Math.floor(totalMins / 60);
+                    const normM = +(totalMins % 60).toFixed(1);
+                    durationBadge.textContent = `${normH}h ${normM}m`;
                 } else {
-                    minutesHelperText.textContent = 'Supports 60+ mins (auto-converts to hours)';
-                    minutesHelperText.className = 'text-[11px] text-slate-400 mt-1.5 pl-1';
-                    normalizedDurationRow.classList.add('hidden');
+                    durationBadge.textContent = `${numFormat.format(hours)}h ${numFormat.format(minutes)}m`;
                 }
 
-                // 4. Update Calculation Breakdown Card
-                breakdownEnteredDuration.textContent = `${numberFormatter.format(hours)} hrs, ${numberFormatter.format(minutes)} mins`;
-                breakdownHoursPay.textContent = formatINR(hoursPay);
-                breakdownMinutesPay.textContent = formatINR(minutesPay);
-                breakdownDecimalHours.textContent = `${decimalHours.toFixed(4)} hrs`;
-
-                // Live Formula String
-                liveFormulaEquation.textContent = `${formatINR(rate)} × (${numberFormatter.format(hours)} + ${numberFormatter.format(minutes)} / 60) = ${formatINR(roundedTotalPayment)}`;
-
-                // Highlight active preset buttons
-                updatePresetButtonHighlights(rate, hours, minutes);
+                // Update Sub-metrics
+                decimalHoursText.textContent = `${numFormat.format(totalDecimalHours)} hrs (${numFormat.format(totalMins)}m)`;
+                hoursPayText.textContent = formatINR(hoursPay);
+                minsPayText.textContent = formatINR(minsPay);
             }
 
-            // --- Highlight Active Preset Chips ---
-            function updatePresetButtonHighlights(rate, hours, minutes) {
-                document.querySelectorAll('.rate-preset-btn').forEach(btn => {
-                    const btnRate = parseFloat(btn.getAttribute('data-rate'));
-                    if (btnRate === rate && hourlyRateInput.value.trim() !== '') {
-                        btn.className = 'rate-preset-btn px-2.5 py-1 rounded-lg text-xs font-medium bg-electric-500/25 text-electric-300 border border-electric-500/50 transition-all';
-                    } else {
-                        btn.className = 'rate-preset-btn px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-800/70 hover:bg-electric-600/20 hover:text-electric-400 hover:border-electric-500/40 text-slate-300 border border-white/5 transition-all';
-                    }
-                });
-
-                document.querySelectorAll('.duration-preset-btn').forEach(btn => {
-                    const btnH = parseFloat(btn.getAttribute('data-hours') || '0');
-                    const btnM = parseFloat(btn.getAttribute('data-minutes') || '0');
-                    const isMatch = (hours === btnH && minutes === btnM && (hours > 0 || minutes > 0));
-                    if (isMatch) {
-                        btn.className = 'duration-preset-btn px-2.5 py-1 rounded-lg text-xs font-medium bg-purple-500/25 text-purple-300 border border-purple-500/50 transition-all';
-                    } else {
-                        btn.className = 'duration-preset-btn px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-800/70 hover:bg-purple-500/20 hover:text-purple-300 hover:border-purple-500/40 text-slate-300 border border-white/5 transition-all';
-                    }
-                });
-            }
-
-            // --- Reset Functionality ---
-            function resetCalculator() {
-                hourlyRateInput.value = DEFAULT_HOURLY_RATE;
-                hoursInput.value = '';
-                minutesInput.value = '';
-                workerNameInput.value = '';
-                hideValidationWarning();
-                calculatePayment();
-                hoursInput.focus();
-            }
-
-            // --- Copy Result to Clipboard ---
-            function copyCalculatedAmount() {
-                const formattedPay = formatINR(currentCalculation.totalPay);
-                const summaryText = `Axora AI Pay Calculation: ${formattedPay} (Rate: ${formatINR(currentCalculation.rate)}/hr | Duration: ${currentCalculation.hours}h ${currentCalculation.minutes}m)`;
-
-                const tempTextArea = document.createElement('textarea');
-                tempTextArea.value = summaryText;
-                document.body.appendChild(tempTextArea);
-                tempTextArea.select();
-                try {
-                    document.execCommand('copy');
-                    copyBtnText.textContent = 'Copied!';
-                    setTimeout(() => {
-                        copyBtnText.textContent = 'Copy Amount';
-                    }, 1800);
-                } catch (err) {
-                    copyBtnText.textContent = 'Copy Failed';
-                }
-                document.body.removeChild(tempTextArea);
-            }
-
-            // --- Session Participant Log Functions ---
-            function recordWorkerEntry() {
-                if (currentCalculation.hours === 0 && currentCalculation.minutes === 0) {
-                    showValidationWarning('Please enter working hours or minutes before recording a participant entry.');
-                    return;
-                }
-                hideValidationWarning();
-
-                const participantName = workerNameInput.value.trim() || `Participant #${sessionEntries.length + 1}`;
-                const entry = {
-                    id: Date.now(),
-                    name: participantName,
-                    rate: currentCalculation.rate,
-                    hours: currentCalculation.hours,
-                    minutes: currentCalculation.minutes,
-                    totalPay: currentCalculation.totalPay
-                };
-
-                sessionEntries.unshift(entry);
-                workerNameInput.value = '';
-                renderSessionLog();
-            }
-
-            function removeSessionEntry(id) {
-                sessionEntries = sessionEntries.filter(item => item.id !== id);
-                renderSessionLog();
-            }
-
-            function renderSessionLog() {
-                const count = sessionEntries.length;
-                logCountBadge.textContent = `${count} ${count === 1 ? 'Entry' : 'Entries'}`;
-
-                const grandTotal = sessionEntries.reduce((sum, item) => sum + item.totalPay, 0);
-                sessionGrandTotal.textContent = formatINR(grandTotal);
-
-                if (count === 0) {
-                    emptyLogState.classList.remove('hidden');
-                    logTableContainer.classList.add('hidden');
-                    logTableBody.innerHTML = '';
-                    return;
-                }
-
-                emptyLogState.classList.add('hidden');
-                logTableContainer.classList.remove('hidden');
-
-                logTableBody.innerHTML = sessionEntries.map((item, idx) => `
-                    <tr class="hover:bg-white/[0.02] transition-colors">
-                        <td class="py-3 px-3 text-slate-400">${count - idx}</td>
-                        <td class="py-3 px-3 font-sans font-semibold text-white">${escapeHtml(item.name)}</td>
-                        <td class="py-3 px-3 text-slate-300">${formatINR(item.rate)}/hr</td>
-                        <td class="py-3 px-3 text-slate-300">${numberFormatter.format(item.hours)}h ${numberFormatter.format(item.minutes)}m</td>
-                        <td class="py-3 px-3 text-right font-bold text-electric-400">${formatINR(item.totalPay)}</td>
-                        <td class="py-3 px-3 text-right">
-                            <button type="button" data-remove-id="${item.id}" class="text-xs text-slate-400 hover:text-rose-400 px-2 py-1 rounded hover:bg-rose-500/10 transition-colors">
-                                Remove
-                            </button>
-                        </td>
-                    </tr>
-                `).join('');
-            }
-
-            function escapeHtml(str) {
-                return str.replace(/[&<>"']/g, function (m) {
-                    return ({
-                        '&': '&amp;',
-                        '<': '&lt;',
-                        '>': '&gt;',
-                        '"': '&quot;',
-                        "'": '&#39;'
-                    })[m];
-                });
-            }
-
-            // --- Event Listeners ---
-            // Live instant calculation on any input change
-            [hourlyRateInput, hoursInput, minutesInput].forEach(input => {
-                input.addEventListener('input', calculatePayment);
-
-                // Prevent typing negative sign '-' directly
-                input.addEventListener('keydown', function (e) {
+            // Live Input Listeners
+            [rateInput, hoursInput, minutesInput].forEach(el => {
+                el.addEventListener('input', calculate);
+                el.addEventListener('keydown', function (e) {
                     if (e.key === '-' || e.key === 'e' || e.key === 'E') {
                         e.preventDefault();
-                        if (e.key === '-') {
-                            showValidationWarning('Negative numbers are not allowed.');
-                        }
+                        if (e.key === '-') showWarning();
                     }
                 });
             });
 
-            // Rate Preset Buttons
-            document.querySelectorAll('.rate-preset-btn').forEach(btn => {
-                btn.addEventListener('click', function () {
-                    hourlyRateInput.value = this.getAttribute('data-rate');
-                    calculatePayment();
-                });
-            });
-
-            // Duration Preset Buttons
-            document.querySelectorAll('.duration-preset-btn').forEach(btn => {
-                btn.addEventListener('click', function () {
-                    hoursInput.value = this.getAttribute('data-hours');
-                    minutesInput.value = this.getAttribute('data-minutes');
-                    calculatePayment();
-                });
-            });
-
-            // Verified Benchmark Scenario Buttons
-            document.querySelectorAll('.benchmark-btn').forEach(btn => {
-                btn.addEventListener('click', function () {
-                    hourlyRateInput.value = this.getAttribute('data-rate');
-                    hoursInput.value = this.getAttribute('data-hours');
-                    minutesInput.value = this.getAttribute('data-minutes');
-                    calculatePayment();
-                });
-            });
-
-            // Clear Duration Only
+            // Clear Duration only (keeps current hourly rate)
             clearDurationBtn.addEventListener('click', function () {
                 hoursInput.value = '';
                 minutesInput.value = '';
-                calculatePayment();
+                warningBanner.classList.add('hidden');
+                calculate();
                 hoursInput.focus();
             });
 
-            // Reset Buttons
-            headerResetBtn.addEventListener('click', resetCalculator);
-            mainResetBtn.addEventListener('click', resetCalculator);
-
-            // Dismiss Alert
-            dismissAlertBtn.addEventListener('click', hideValidationWarning);
-
-            // Copy Button
-            copyResultBtn.addEventListener('click', copyCalculatedAmount);
-
-            // Session Log Actions
-            logEntryBtn.addEventListener('click', recordWorkerEntry);
-            workerNameInput.addEventListener('keydown', function (e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    recordWorkerEntry();
-                }
+            // Full Reset (Rate -> 300, Hours & Minutes -> empty)
+            resetBtn.addEventListener('click', function () {
+                rateInput.value = DEFAULT_RATE;
+                hoursInput.value = '';
+                minutesInput.value = '';
+                warningBanner.classList.add('hidden');
+                calculate();
+                hoursInput.focus();
             });
 
-            clearLogBtn.addEventListener('click', function () {
-                sessionEntries = [];
-                renderSessionLog();
-            });
-
-            logTableBody.addEventListener('click', function (e) {
-                const removeBtn = e.target.closest('[data-remove-id]');
-                if (removeBtn) {
-                    const id = Number(removeBtn.getAttribute('data-remove-id'));
-                    removeSessionEntry(id);
-                }
-            });
-
-            // Keyboard shortcut: Escape resets duration/fields
-            document.addEventListener('keydown', function (e) {
-                if (e.key === 'Escape') {
-                    resetCalculator();
-                }
-            });
-
-            // Initial Calculation on Page Load
-            calculatePayment();
+            // Run on load
+            calculate();
         })();
     </script>
 </body>
